@@ -1,0 +1,16 @@
+# Build output (Makefile archives/exports into here; `make clean` removes it)
+.build/
+
+# Xcode project is generated from project.yml via `xcodegen generate` — not hand-maintained
+*.xcodeproj/
+
+# Xcode user-specific state (breakpoints, window layout, etc.)
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.swiftpm/
+
+# macOS Finder
+.DS_Store
