@@ -44,6 +44,19 @@ manually" is still there as a fallback:
 2. Open DevTools -> Application (Chrome) or Storage (Firefox) -> Cookies -> claude.ai.
 3. Copy the value of the `sessionKey` cookie and paste it into that dialog.
 
+## Install via Homebrew
+
+    brew tap Universumgames/tap
+    brew install --cask claude-usage
+
+The cask installs a prebuilt release from this repo's
+[GitHub Releases](https://github.com/Universumgames/Claude_Battery/releases). That build
+is signed with an Apple Development certificate, not notarized by Apple, so on some
+Macs Gatekeeper may still call it "damaged" the first time — right-click the app in
+`/Applications` and choose "Open" once if so.
+
+To upgrade: `brew upgrade --cask claude-usage`. To uninstall: `brew uninstall --cask claude-usage`.
+
 ## Build & install
 
     make install
@@ -96,6 +109,17 @@ actually fix it, not yet done:
   app-specific password or API key for `notarytool`), then staple the ticket —
   the actual sanctioned fix, appropriate if this app is ever distributed beyond
   this machine.
+
+## Cutting a new Homebrew release
+
+1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make app`.
+2. Zip it: `ditto -c -k --sequesterRsrc --keepParent ".build/Claude Usage.app" ".build/Claude Usage.app.zip"`
+3. `shasum -a 256 ".build/Claude Usage.app.zip"` for the sha256.
+4. Tag and push: `git tag -a vX.Y.Z -m "Claude Usage vX.Y.Z" && git push github vX.Y.Z`
+5. `gh release create vX.Y.Z ".build/Claude Usage.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
+6. In the [homebrew-tap](https://github.com/Universumgames/homebrew-tap) repo, bump `version` and
+   `sha256` in `Casks/claude-usage.rb` and push — GitHub replaces spaces in release asset
+   filenames with dots (`Claude.Usage.app.zip`), which the cask URL already accounts for.
 
 ## Xcode project
 
