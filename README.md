@@ -1,4 +1,4 @@
-# Claude Usage Menu Bar
+# ClaudeBattery
 
 A macOS menu bar app showing your claude.ai Pro/Max usage as a battery icon.
 
@@ -12,7 +12,7 @@ A macOS menu bar app showing your claude.ai Pro/Max usage as a battery icon.
   [Desktop widget](#desktop-widget) below for a known limitation with local
   (non-notarized) builds before you go looking for it in the widget gallery.
 
-![Claude Usage menu bar dropdown showing session and weekly limits](menubar_screenshot.png)
+![ClaudeBattery menu bar dropdown showing session and weekly limits](menubar_screenshot.png)
 
 ## How it gets the data
 
@@ -29,7 +29,7 @@ unofficial, Anthropic could change the response shape at any time, breaking this
 ## Signing in
 
 Click the menu bar icon -> "Sign in". An embedded browser window opens showing
-claude.ai's real login page (`Sources/ClaudeUsageMenuBar/SignInWindowController.swift`,
+claude.ai's real login page (`Sources/ClaudeBattery/SignInWindowController.swift`,
 a `WKWebView`). Log in as normal — email/password, or an SSO provider like "Continue
 with Google" (popup-based SSO windows are supported too). The moment claude.ai sets
 its `sessionKey` cookie, the app grabs it and closes the window automatically — no
@@ -49,11 +49,11 @@ manually" is still there as a fallback:
 ## Install via Homebrew
 
     brew tap Universumgames/tap
-    brew install --cask claude-usage
+    brew install --cask claude-battery
 
 Since this is a personal (non-official) tap, Homebrew will ask you to confirm you trust
 it the first time; if that prompt doesn't appear (e.g. non-interactive shells) or
-install fails with "untrusted tap", run `brew trust --cask universumgames/tap/claude-usage`
+install fails with "untrusted tap", run `brew trust --cask universumgames/tap/claude-battery`
 first.
 
 The cask installs a prebuilt release from this repo's
@@ -62,7 +62,7 @@ is signed with an Apple Development certificate, not notarized by Apple, so on s
 Macs Gatekeeper may still call it "damaged" the first time — right-click the app in
 `/Applications` and choose "Open" once if so.
 
-To upgrade: `brew upgrade --cask claude-usage`. To uninstall: `brew uninstall --cask claude-usage`.
+To upgrade: `brew upgrade --cask claude-battery`. To uninstall: `brew uninstall --cask claude-battery`.
 
 ## Build & install
 
@@ -71,27 +71,27 @@ To upgrade: `brew upgrade --cask claude-usage`. To uninstall: `brew uninstall --
 Regenerates the Xcode project, archives a Release build via `xcodebuild archive`,
 signs and exports it via `xcodebuild -exportArchive` (using `ExportOptions.plist`,
 same as Xcode's Organizer "Distribute App" flow), packages the result as
-`Claude Usage.app`, and installs it to `/Applications` (killing any running
+`ClaudeBattery.app`, and installs it to `/Applications` (killing any running
 instance first so the copy isn't blocked).
 
     make run        # install, then launch it
-    make app        # just build .build/Claude Usage.app, don't install
-    make dist       # build and zip .build/Claude Usage.app.zip for distribution, print its sha256
+    make app        # just build .build/ClaudeBattery.app, don't install
+    make dist       # build and zip .build/ClaudeBattery.app.zip for distribution, print its sha256
     make xcodeproj  # only regenerate the .xcodeproj from project.yml
     make uninstall  # stop it and remove it from /Applications
     make clean      # remove the .build directory
 
-To launch at login, add `/Applications/Claude Usage.app` under
+To launch at login, add `/Applications/ClaudeBattery.app` under
 System Settings -> General -> Login Items.
 
 ## Desktop widget
 
-The widget lives in a `ClaudeUsageWidgetExtension` target (`Sources/ClaudeUsageWidget`)
+The widget lives in a `ClaudeBatteryWidgetExtension` target (`Sources/ClaudeBatteryWidget`)
 embedded in the app bundle. It doesn't talk to claude.ai itself — the always-running
 menu bar app writes its latest fetch into a shared App Group container
-(`group.de.universegame.ClaudeUsageMenuBar`, see `Sources/Shared/SharedUsageSnapshot.swift`)
+(`group.de.universegame.ClaudeBattery`, see `Sources/Shared/SharedUsageSnapshot.swift`)
 and pokes `WidgetCenter` to redraw whenever it refreshes. If the widget shows
-"Open Claude Usage to sign in", the app either isn't running or hasn't fetched yet.
+"Open ClaudeBattery to sign in", the app either isn't running or hasn't fetched yet.
 
 **Signing:** both targets use `CODE_SIGN_STYLE: Automatic` with `DEVELOPMENT_TEAM: 98ZXK38P8L`
 (this needs a real provisioning profile because of the App Groups entitlement — a bare
@@ -110,7 +110,7 @@ Mac App Store-signed; a local development certificate doesn't clear that bar,
 regardless of Debug/Release or plain-build/archive-export. Neither switching build
 configuration nor moving to the archive+export flow above changed this. Two ways to
 actually fix it, not yet done:
-- Open `ClaudeUsageMenuBar.xcodeproj` in Xcode and hit Run (▶) once — Xcode's own
+- Open `ClaudeBattery.xcodeproj` in Xcode and hit Run (▶) once — Xcode's own
   install/launch path performs additional local trust registration that a plain
   `open` of the built `.app` skips.
 - Set up notarization (needs a Developer ID Application certificate + an
@@ -121,27 +121,26 @@ actually fix it, not yet done:
 ## Cutting a new Homebrew release
 
 1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make dist` — builds the app,
-   zips it to `.build/Claude Usage.app.zip`, and prints its sha256.
-2. Tag and push: `git tag -a vX.Y.Z -m "Claude Usage vX.Y.Z" && git push github vX.Y.Z`
-3. `gh release create vX.Y.Z ".build/Claude Usage.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
+   zips it to `.build/ClaudeBattery.app.zip`, and prints its sha256.
+2. Tag and push: `git tag -a vX.Y.Z -m "ClaudeBattery vX.Y.Z" && git push github vX.Y.Z`
+3. `gh release create vX.Y.Z ".build/ClaudeBattery.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
 4. In the [homebrew-tap](https://github.com/Universumgames/homebrew-tap) repo, bump `version` and
-   `sha256` in `Casks/claude-usage.rb` and push — GitHub replaces spaces in release asset
-   filenames with dots (`Claude.Usage.app.zip`), which the cask URL already accounts for.
+   `sha256` in `Casks/claude-battery.rb` and push.
 
 ## Xcode project
 
 The `.xcodeproj` is generated from `project.yml` via `xcodegen` (not hand-maintained).
 `make app` / `make install` always regenerate it first, so newly added or removed
-source files under `Sources/ClaudeUsageMenuBar` are picked up automatically — you
+source files under `Sources/ClaudeBattery` are picked up automatically — you
 don't need to run `xcodegen` by hand. If you're working purely in Xcode and just
 added a file there, it's already reflected on disk, so a re-open isn't needed either.
 
 ## App icon
 
-The icon is an Icon Composer document at `Sources/ClaudeUsageMenuBar/AppIcon.icon`
+The icon is an Icon Composer document at `Sources/ClaudeBattery/AppIcon.icon`
 (a background gradient + a battery glyph layer at `Assets/battery.svg`, with a
 separate darker gradient for dark mode). It's a real Icon Composer file — open it
-directly in Icon Composer (`open "Sources/ClaudeUsageMenuBar/AppIcon.icon"` or via
+directly in Icon Composer (`open "Sources/ClaudeBattery/AppIcon.icon"` or via
 Xcode) to tweak colors, lighting, or add more layers interactively. Xcode compiles
 it into the app icon automatically via `ASSETCATALOG_COMPILER_APPICON_NAME` in
 `project.yml`, same as a traditional `.appiconset`.

@@ -2,13 +2,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "ClaudeUsageMenuBar",
+    name: "ClaudeBattery",
     platforms: [.macOS(.v13)],
     targets: [
         .executableTarget(
-            name: "ClaudeUsageMenuBar",
-            path: "Sources/ClaudeUsageMenuBar",
-            exclude: ["Info.plist", "ClaudeUsageMenuBar.entitlements", "AppIcon.icon"]
+            name: "ClaudeBattery",
+            path: "Sources/ClaudeBattery",
+            exclude: ["Info.plist", "ClaudeBattery.entitlements", "AppIcon.icon"]
         )
     ]
 )

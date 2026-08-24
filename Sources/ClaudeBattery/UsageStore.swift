@@ -49,7 +49,7 @@ final class UsageStore: ObservableObject {
         snapshot = nil
         lastError = nil
         SharedUsageStore.clear()
-        WidgetCenter.shared.reloadTimelines(ofKind: "ClaudeUsageWidget")
+        WidgetCenter.shared.reloadTimelines(ofKind: "ClaudeBatteryWidget")
     }
 
     /// Mirrors the latest fetch into the shared App Group container and asks
@@ -63,7 +63,7 @@ final class UsageStore: ObservableObject {
             weekResetsAt: snapshot.week.resetsAt,
             fetchedAt: snapshot.fetchedAt
         ))
-        WidgetCenter.shared.reloadTimelines(ofKind: "ClaudeUsageWidget")
+        WidgetCenter.shared.reloadTimelines(ofKind: "ClaudeBatteryWidget")
     }
 
     /// Remaining fraction (0...1) of the most constrained active window — drives the menu bar icon.

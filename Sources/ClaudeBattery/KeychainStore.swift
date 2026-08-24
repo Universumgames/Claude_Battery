@@ -2,7 +2,7 @@ import Foundation
 import Security
 
 enum KeychainStore {
-    private static let service = "de.universegame.ClaudeUsageMenuBar"
+    private static let service = "de.universegame.ClaudeBattery"
     private static let account = "sessionKey"
 
     static func save(_ value: String) {

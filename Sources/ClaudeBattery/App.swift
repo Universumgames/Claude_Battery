@@ -1,7 +1,7 @@
 import AppKit
 
 @main
-struct ClaudeUsageMenuBarMain {
+struct ClaudeBatteryMain {
     @MainActor
     static func main() {
         let app = NSApplication.shared

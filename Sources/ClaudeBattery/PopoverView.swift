@@ -29,7 +29,7 @@ struct PopoverView: View {
 
     private var header: some View {
         HStack {
-            Text("Claude Usage")
+            Text("ClaudeBattery")
                 .font(.headline)
             Spacer()
             if store.isLoading {

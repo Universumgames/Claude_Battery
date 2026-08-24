@@ -1,11 +1,11 @@
-APP_NAME := Claude Usage
+APP_NAME := ClaudeBattery
 BUILD_DIR := .build
 APP_PATH := $(BUILD_DIR)/$(APP_NAME).app
 INSTALL_DIR := /Applications
 INSTALLED_APP := $(INSTALL_DIR)/$(APP_NAME).app
 
-PROJECT := ClaudeUsageMenuBar.xcodeproj
-SCHEME := Claude Usage
+PROJECT := ClaudeBattery.xcodeproj
+SCHEME := ClaudeBattery
 CONFIGURATION := Release
 DERIVED_DATA := $(BUILD_DIR)/DerivedData
 ARCHIVE_PATH := $(BUILD_DIR)/$(APP_NAME).xcarchive
@@ -14,7 +14,7 @@ EXPORT_OPTIONS := ExportOptions.plist
 DIST_ZIP := $(BUILD_DIR)/$(APP_NAME).app.zip
 
 ICTOOL := /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool
-ICON_SRC := Sources/ClaudeUsageMenuBar/AppIcon.icon
+ICON_SRC := Sources/ClaudeBattery/AppIcon.icon
 ICONSET := $(BUILD_DIR)/FolderIcon.iconset
 
 .PHONY: all app build install run xcodeproj clean uninstall foldericon dist

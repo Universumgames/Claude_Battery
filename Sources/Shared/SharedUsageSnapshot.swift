@@ -12,7 +12,7 @@ struct SharedUsageSnapshot: Codable {
 }
 
 enum SharedUsageStore {
-    static let appGroupID = "group.com.universegame.ClaudeUsageMenuBar"
+    static let appGroupID = "group.de.universegame.ClaudeBattery"
     private static let key = "latestSnapshot"
 
     private static var defaults: UserDefaults? {

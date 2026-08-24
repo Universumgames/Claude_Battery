@@ -27,7 +27,7 @@ struct UsageProvider: TimelineProvider {
     }
 }
 
-struct ClaudeUsageWidgetView: View {
+struct ClaudeBatteryWidgetView: View {
     let entry: UsageEntry
 
     var body: some View {
@@ -44,7 +44,7 @@ struct ClaudeUsageWidgetView: View {
     @ViewBuilder
     private func content(for snapshot: SharedUsageSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label("Claude Usage", systemImage: "bolt.fill")
+            Label("ClaudeBattery", systemImage: "bolt.fill")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -103,7 +103,7 @@ struct ClaudeUsageWidgetView: View {
             Image(systemName: "bolt.slash")
                 .font(.title2)
                 .foregroundStyle(.secondary)
-            Text("Open Claude Usage to sign in")
+            Text("Open ClaudeBattery to sign in")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -112,14 +112,14 @@ struct ClaudeUsageWidgetView: View {
     }
 }
 
-struct ClaudeUsageWidget: Widget {
-    let kind = "ClaudeUsageWidget"
+struct ClaudeBatteryWidget: Widget {
+    let kind = "ClaudeBatteryWidget"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: UsageProvider()) { entry in
-            ClaudeUsageWidgetView(entry: entry)
+            ClaudeBatteryWidgetView(entry: entry)
         }
-        .configurationDisplayName("Claude Usage")
+        .configurationDisplayName("ClaudeBattery")
         .description("Shows your remaining Claude session and weekly usage.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
