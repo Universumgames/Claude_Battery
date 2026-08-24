@@ -49,6 +49,11 @@ manually" is still there as a fallback:
     brew tap Universumgames/tap
     brew install --cask claude-usage
 
+Since this is a personal (non-official) tap, Homebrew will ask you to confirm you trust
+it the first time; if that prompt doesn't appear (e.g. non-interactive shells) or
+install fails with "untrusted tap", run `brew trust --cask universumgames/tap/claude-usage`
+first.
+
 The cask installs a prebuilt release from this repo's
 [GitHub Releases](https://github.com/Universumgames/Claude_Battery/releases). That build
 is signed with an Apple Development certificate, not notarized by Apple, so on some
