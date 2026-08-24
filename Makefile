@@ -12,12 +12,14 @@ ARCHIVE_PATH := $(BUILD_DIR)/$(APP_NAME).xcarchive
 EXPORT_PATH := $(BUILD_DIR)/Export
 EXPORT_OPTIONS := ExportOptions.plist
 DIST_ZIP := $(BUILD_DIR)/$(APP_NAME).app.zip
+DMG_PATH := $(BUILD_DIR)/$(APP_NAME).dmg
+DMG_STAGING := $(BUILD_DIR)/dmg-staging
 
 ICTOOL := /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool
 ICON_SRC := Sources/ClaudeBattery/AppIcon.icon
 ICONSET := $(BUILD_DIR)/FolderIcon.iconset
 
-.PHONY: all app build install run xcodeproj clean uninstall foldericon dist
+.PHONY: all app build install run xcodeproj clean uninstall foldericon dist dmg
 
 all: install
 
@@ -54,6 +56,19 @@ dist: app
 	ditto -c -k --sequesterRsrc --keepParent "$(APP_PATH)" "$(DIST_ZIP)"
 	@echo "Exported: $(DIST_ZIP)"
 	@shasum -a 256 "$(DIST_ZIP)"
+
+# Package the exported app into a drag-to-Applications .dmg for distribution
+# (e.g. the Homebrew cask).
+dmg: app
+	rm -f "$(DMG_PATH)"
+	rm -rf "$(DMG_STAGING)"
+	mkdir -p "$(DMG_STAGING)"
+	cp -R "$(APP_PATH)" "$(DMG_STAGING)/"
+	ln -s /Applications "$(DMG_STAGING)/Applications"
+	hdiutil create -volname "$(APP_NAME)" -srcfolder "$(DMG_STAGING)" -ov -format UDZO "$(DMG_PATH)"
+	rm -rf "$(DMG_STAGING)"
+	@echo "Exported: $(DMG_PATH)"
+	@shasum -a 256 "$(DMG_PATH)"
 
 # Build and copy into /Applications, restarting the app if it's running.
 install: app

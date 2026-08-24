@@ -77,6 +77,7 @@ instance first so the copy isn't blocked).
     make run        # install, then launch it
     make app        # just build .build/ClaudeBattery.app, don't install
     make dist       # build and zip .build/ClaudeBattery.app.zip for distribution, print its sha256
+    make dmg        # build and package .build/ClaudeBattery.dmg for distribution, print its sha256
     make xcodeproj  # only regenerate the .xcodeproj from project.yml
     make uninstall  # stop it and remove it from /Applications
     make clean      # remove the .build directory
@@ -120,10 +121,10 @@ actually fix it, not yet done:
 
 ## Cutting a new Homebrew release
 
-1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make dist` — builds the app,
-   zips it to `.build/ClaudeBattery.app.zip`, and prints its sha256.
+1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make dmg` — builds the app,
+   packages it as a drag-to-Applications `.build/ClaudeBattery.dmg`, and prints its sha256.
 2. Tag and push: `git tag -a vX.Y.Z -m "ClaudeBattery vX.Y.Z" && git push github vX.Y.Z`
-3. `gh release create vX.Y.Z ".build/ClaudeBattery.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
+3. `gh release create vX.Y.Z ".build/ClaudeBattery.dmg" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
 4. In the [homebrew-tap](https://github.com/Universumgames/homebrew-tap) repo, bump `version` and
    `sha256` in `Casks/claude-battery.rb` and push.
 
