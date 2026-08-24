@@ -19,7 +19,17 @@ ICTOOL := /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Conten
 ICON_SRC := Sources/ClaudeBattery/AppIcon.icon
 ICONSET := $(BUILD_DIR)/FolderIcon.iconset
 
-.PHONY: all app build install run xcodeproj clean uninstall foldericon dist dmg
+# Notarizing requires uploading to Apple via Xcode Organizer (xcodebuild's own
+# archive/export can't do this), so releases are cut from an archive Xcode
+# produced and you dragged into Versions/<version>/ after notarization
+# succeeded there — not from `make app`'s local, unnotarized build.
+VERSIONS_DIR := Versions
+LATEST_ARCHIVE := $(shell find "$(VERSIONS_DIR)" -mindepth 2 -maxdepth 2 -iname '*.xcarchive' -type d -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -n1 | sed 's/^[0-9]* //')
+RELEASE_VERSION := $(shell /usr/libexec/PlistBuddy -c "Print :ApplicationProperties:CFBundleShortVersionString" "$(LATEST_ARCHIVE)/Info.plist" 2>/dev/null)
+GH_REMOTE := github
+GH_REPO := Universumgames/Claude_Battery
+
+.PHONY: all app build install run xcodeproj clean uninstall foldericon dist dmg release
 
 all: install
 
@@ -57,18 +67,50 @@ dist: app
 	@echo "Exported: $(DIST_ZIP)"
 	@shasum -a 256 "$(DIST_ZIP)"
 
-# Package the exported app into a drag-to-Applications .dmg for distribution
-# (e.g. the Homebrew cask).
-dmg: app
-	rm -f "$(DMG_PATH)"
-	rm -rf "$(DMG_STAGING)"
-	mkdir -p "$(DMG_STAGING)"
-	cp -R "$(APP_PATH)" "$(DMG_STAGING)/"
-	ln -s /Applications "$(DMG_STAGING)/Applications"
-	hdiutil create -volname "$(APP_NAME)" -srcfolder "$(DMG_STAGING)" -ov -format UDZO "$(DMG_PATH)"
-	rm -rf "$(DMG_STAGING)"
-	@echo "Exported: $(DMG_PATH)"
-	@shasum -a 256 "$(DMG_PATH)"
+# Package the latest notarized archive under Versions/<version>/*.xcarchive into
+# a drag-to-Applications .dmg for distribution (e.g. the Homebrew cask). Prefers
+# the stapled copy Xcode Organizer leaves under Submissions/ once notarization
+# succeeds; falls back to the plain archive product (with a warning) if none is
+# stapled yet.
+dmg:
+	@if [ -z "$(LATEST_ARCHIVE)" ]; then \
+	  echo "error: no .xcarchive found under $(VERSIONS_DIR)/<version>/ — archive and notarize in Xcode Organizer, then drag it into $(VERSIONS_DIR)/<version>/" >&2; \
+	  exit 1; \
+	fi
+	@echo "Using archive: $(LATEST_ARCHIVE)"
+	@notarized_app=$$(find "$(LATEST_ARCHIVE)/Submissions" -mindepth 2 -maxdepth 2 -iname "$(APP_NAME).app" -type d 2>/dev/null | head -n1); \
+	if [ -n "$$notarized_app" ] && xcrun stapler validate "$$notarized_app" >/dev/null 2>&1; then \
+	  src_app="$$notarized_app"; \
+	  echo "Using notarized, stapled app: $$src_app"; \
+	else \
+	  src_app="$(LATEST_ARCHIVE)/Products/Applications/$(APP_NAME).app"; \
+	  echo "warning: no stapled notarization ticket found; using unnotarized archive product: $$src_app" >&2; \
+	fi; \
+	rm -f "$(DMG_PATH)"; \
+	rm -rf "$(DMG_STAGING)"; \
+	mkdir -p "$(DMG_STAGING)"; \
+	cp -R "$$src_app" "$(DMG_STAGING)/"; \
+	ln -s /Applications "$(DMG_STAGING)/Applications"; \
+	hdiutil create -volname "$(APP_NAME)" -srcfolder "$(DMG_STAGING)" -ov -format UDZO "$(DMG_PATH)"; \
+	rm -rf "$(DMG_STAGING)"; \
+	echo "Exported: $(DMG_PATH)"; \
+	shasum -a 256 "$(DMG_PATH)"
+
+# Tag, push, and cut a GitHub release from the .dmg built above, using the
+# version embedded in the notarized archive (Versions/<version>/ is just where
+# you dropped it — this is what actually shipped). Override release notes with
+# `make release NOTES="..."`.
+release: dmg
+	@if [ -z "$(RELEASE_VERSION)" ]; then \
+	  echo "error: couldn't read CFBundleShortVersionString from $(LATEST_ARCHIVE)/Info.plist" >&2; \
+	  exit 1; \
+	fi
+	@git diff --quiet && git diff --cached --quiet || { echo "error: uncommitted changes in tracked files — commit first" >&2; exit 1; }
+	@tag="v$(RELEASE_VERSION)"; \
+	echo "Releasing $$tag from $(DMG_PATH)"; \
+	git tag -a "$$tag" -m "$(APP_NAME) $$tag" && \
+	git push $(GH_REMOTE) "$$tag" && \
+	gh release create "$$tag" "$(DMG_PATH)" -R $(GH_REPO) --title "$$tag" --notes "$${NOTES:-$(APP_NAME) $$tag}"
 
 # Build and copy into /Applications, restarting the app if it's running.
 install: app

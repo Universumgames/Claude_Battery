@@ -3,52 +3,52 @@
     {
       "value" : {
         "linear-gradient" : [
-          "extended-srgb:0.90980,0.57647,0.37255,1.00000",
-          "extended-srgb:0.74118,0.35294,0.21961,1.00000"
-        ],
-        "orientation" : {
-          "start" : {
-            "x" : 0.5,
-            "y" : 0
-          },
-          "stop" : {
-            "x" : 0.5,
-            "y" : 1
-          }
-        }
+          "display-p3:0.85010,0.46753,0.34058,1.00000",
+          "display-p3:0.85840,0.40674,0.26318,1.00000"
+        ]
       }
     },
     {
       "appearance" : "dark",
-      "value" : {
-        "linear-gradient" : [
-          "extended-srgb:0.56078,0.32941,0.20784,1.00000",
-          "extended-srgb:0.32941,0.16863,0.09804,1.00000"
-        ],
-        "orientation" : {
-          "start" : {
-            "x" : 0.5,
-            "y" : 0
-          },
-          "stop" : {
-            "x" : 0.5,
-            "y" : 1
-          }
-        }
-      }
+      "value" : "automatic"
     }
   ],
   "groups" : [
     {
+      "blur-material" : null,
       "layers" : [
         {
-          "fill" : "none",
+          "blend-mode-specializations" : [
+            {
+              "value" : "normal"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "value" : "automatic"
+            },
+            {
+              "appearance" : "dark",
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.85010,0.46753,0.34058,1.00000",
+                  "display-p3:0.85840,0.40674,0.26318,1.00000"
+                ]
+              }
+            }
+          ],
           "glass" : true,
+          "hidden" : false,
           "image-name" : "battery.svg",
           "name" : "battery",
           "opacity" : 1
         }
       ],
+      "lighting" : "individual",
       "name" : "Group: Battery",
       "shadow" : {
         "kind" : "neutral",
