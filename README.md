@@ -12,6 +12,8 @@ A macOS menu bar app showing your claude.ai Pro/Max usage as a battery icon.
   [Desktop widget](#desktop-widget) below for a known limitation with local
   (non-notarized) builds before you go looking for it in the widget gallery.
 
+![Claude Usage menu bar dropdown showing session and weekly limits](menubar_screenshot.png)
+
 ## How it gets the data
 
 There is no official public API for the claude.ai subscription usage limits, so this
@@ -74,6 +76,7 @@ instance first so the copy isn't blocked).
 
     make run        # install, then launch it
     make app        # just build .build/Claude Usage.app, don't install
+    make dist       # build and zip .build/Claude Usage.app.zip for distribution, print its sha256
     make xcodeproj  # only regenerate the .xcodeproj from project.yml
     make uninstall  # stop it and remove it from /Applications
     make clean      # remove the .build directory
@@ -117,12 +120,11 @@ actually fix it, not yet done:
 
 ## Cutting a new Homebrew release
 
-1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make app`.
-2. Zip it: `ditto -c -k --sequesterRsrc --keepParent ".build/Claude Usage.app" ".build/Claude Usage.app.zip"`
-3. `shasum -a 256 ".build/Claude Usage.app.zip"` for the sha256.
-4. Tag and push: `git tag -a vX.Y.Z -m "Claude Usage vX.Y.Z" && git push github vX.Y.Z`
-5. `gh release create vX.Y.Z ".build/Claude Usage.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
-6. In the [homebrew-tap](https://github.com/Universumgames/homebrew-tap) repo, bump `version` and
+1. Bump `MARKETING_VERSION` in `project.yml` if needed, then `make dist` — builds the app,
+   zips it to `.build/Claude Usage.app.zip`, and prints its sha256.
+2. Tag and push: `git tag -a vX.Y.Z -m "Claude Usage vX.Y.Z" && git push github vX.Y.Z`
+3. `gh release create vX.Y.Z ".build/Claude Usage.app.zip" -R Universumgames/Claude_Battery --title vX.Y.Z --notes "..."`
+4. In the [homebrew-tap](https://github.com/Universumgames/homebrew-tap) repo, bump `version` and
    `sha256` in `Casks/claude-usage.rb` and push — GitHub replaces spaces in release asset
    filenames with dots (`Claude.Usage.app.zip`), which the cask URL already accounts for.
 

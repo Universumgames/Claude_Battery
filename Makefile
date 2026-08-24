@@ -11,12 +11,13 @@ DERIVED_DATA := $(BUILD_DIR)/DerivedData
 ARCHIVE_PATH := $(BUILD_DIR)/$(APP_NAME).xcarchive
 EXPORT_PATH := $(BUILD_DIR)/Export
 EXPORT_OPTIONS := ExportOptions.plist
+DIST_ZIP := $(BUILD_DIR)/$(APP_NAME).app.zip
 
 ICTOOL := /Applications/Xcode.app/Contents/Applications/Icon Composer.app/Contents/Executables/ictool
 ICON_SRC := Sources/ClaudeUsageMenuBar/AppIcon.icon
 ICONSET := $(BUILD_DIR)/FolderIcon.iconset
 
-.PHONY: all app build install run xcodeproj clean uninstall foldericon
+.PHONY: all app build install run xcodeproj clean uninstall foldericon dist
 
 all: install
 
@@ -45,6 +46,14 @@ app: xcodeproj
 	@echo "Run:   open \"$(APP_PATH)\""
 
 build: app
+
+# Zip the exported app for distribution (e.g. attaching to a GitHub release),
+# same as the manual `ditto` step in the Homebrew release process.
+dist: app
+	rm -f "$(DIST_ZIP)"
+	ditto -c -k --sequesterRsrc --keepParent "$(APP_PATH)" "$(DIST_ZIP)"
+	@echo "Exported: $(DIST_ZIP)"
+	@shasum -a 256 "$(DIST_ZIP)"
 
 # Build and copy into /Applications, restarting the app if it's running.
 install: app
